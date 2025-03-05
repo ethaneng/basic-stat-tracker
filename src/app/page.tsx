@@ -188,7 +188,7 @@ export default function Home() {
   return (
     <div>
       <h2 className="text-xl font-bold">Sessions</h2>
-      <div className="grid grid-cols-[300px_1fr]">
+      <div className="grid grid-cols-1 md:grid-cols-[200px_1fr]">
         {/* List */}
         <ul className="divide-y-2 py-2">
           <li>
@@ -214,66 +214,72 @@ export default function Home() {
         <div className="p-4">
           {selectedSession ? (
             <div>
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0 mb-4">
                 <input
                   type="text"
-                  className="text-xl font-bold mb-4 bg-transparent"
+                  className="text-xl font-bold bg-transparent w-full md:w-auto"
                   value={selectedSession.title}
                   onChange={(e) => changeSessionTitle(e.target.value)}
                 />
-                <div className="flex gap-4">
+                <div className="flex gap-4 md:justify-end justify-start w-full">
                   <button
                     onClick={duplicateSession}
-                    className="hover:underline"
+                    className="hover:underline text-sm md:text-base"
                   >
                     Duplicate Session
                   </button>
-                  <button onClick={downloadCsv} className="hover:underline">
+                  <button
+                    onClick={downloadCsv}
+                    className="hover:underline text-sm md:text-base"
+                  >
                     Export as CSV
                   </button>
                 </div>
               </div>
-              <ul className="grid grid-cols-3 gap-4">
+              <ul className="flex flex-wrap gap-4">
                 {selectedSession.stats.map((stat) => (
                   <li
                     key={stat.id}
-                    className="w-64 h-64 border flex flex-col items-center justify-between p-4"
+                    className="sm:w-48 w-full h-32 border grid grid-cols-[30px_1fr_30px]"
                   >
-                    <input
-                      type="text"
-                      className="font-bold text-center bg-transparent"
-                      value={stat.name}
-                      onChange={(e) => changeStatName(stat.id, e.target.value)}
-                    />
-                    <input
-                      className="text-xl w-[60px] text-center"
-                      value={stat.value}
-                      onChange={(e) =>
-                        changeStatValue(stat.id, Number(e.target.value))
-                      }
-                    />
-                    <div className="w-full flex gap-2">
-                      <button
-                        type="button"
-                        className="px-4 py-2 w-full rounded-md bg-red-600 hover:bg-red-800"
-                        onClick={() => changeStatValue(stat.id, stat.value - 1)}
-                      >
-                        -
-                      </button>
-                      <button
-                        type="button"
-                        className="px-4 py-2 w-full rounded-md bg-green-600 hover:bg-green-800"
-                        onClick={() => changeStatValue(stat.id, stat.value + 1)}
-                      >
-                        +
-                      </button>
+                    <button
+                      type="button"
+                      className="bg-red-600 hover:bg-red-800 h-full flex items-center justify-center"
+                      onClick={() => changeStatValue(stat.id, stat.value - 1)}
+                    >
+                      -
+                    </button>
+                    <div className="flex flex-col items-center justify-center px-2">
+                      <input
+                        type="text"
+                        className="font-bold w-full text-center bg-transparent"
+                        value={stat.name}
+                        onChange={(e) =>
+                          changeStatName(stat.id, e.target.value)
+                        }
+                      />
+                      <input
+                        type="number"
+                        className="text-xl w-full text-center bg-transparent"
+                        value={stat.value}
+                        onChange={(e) =>
+                          changeStatValue(stat.id, Number(e.target.value))
+                        }
+                      />
                     </div>
+                    <button
+                      type="button"
+                      className="bg-green-600 hover:bg-green-800 h-full flex items-center justify-center"
+                      onClick={() => changeStatValue(stat.id, stat.value + 1)}
+                    >
+                      +
+                    </button>
                   </li>
                 ))}
-                <li>
+                <li className="w-full sm:w-48">
                   <button
                     onClick={() => setNewStatIsOpen(true)}
-                    className="w-64 h-64 border"
+                    className="w-full h-32 border"
                   >
                     New Stat
                   </button>
@@ -289,7 +295,7 @@ export default function Home() {
       {/* Modal  */}
       {newSessionIsOpen && (
         <div className="absolute w-screen h-screen left-0 top-0 bg-black/50">
-          <div className="absolute top-1/2 left-1/2 w-[500px] -translate-x-1/2 -translate-y-1/2 bg-neutral-700 p-4 rounded-md">
+          <div className="absolute top-1/2 left-1/2 w-[90%] md:w-[500px] -translate-x-1/2 -translate-y-1/2 bg-neutral-700 p-4 rounded-md">
             <h3 className="text-lg font-bold mb-4">New Session</h3>
             <form>
               <div>
@@ -324,7 +330,7 @@ export default function Home() {
 
       {newStatIsOpen && (
         <div className="absolute w-screen h-screen left-0 top-0 bg-black/50">
-          <div className="absolute top-1/2 left-1/2 w-[500px] -translate-x-1/2 -translate-y-1/2 bg-neutral-700 p-4 rounded-md">
+          <div className="absolute top-1/2 left-1/2 w-[90%] md:w-[500px] -translate-x-1/2 -translate-y-1/2 bg-neutral-700 p-4 rounded-md">
             <h3 className="text-lg font-bold mb-4">New Stat</h3>
             <form>
               <div>
