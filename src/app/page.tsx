@@ -1,5 +1,6 @@
 "use client";
 
+import { SP } from "next/dist/shared/lib/utils";
 import { useEffect, useMemo, useState } from "react";
 
 interface Stat {
@@ -185,12 +186,41 @@ export default function Home() {
     setSelectedSessionIdx(sessions.length);
   }
 
+  function deleteSession() {
+    if (selectedSessionIdx === null) return;
+
+    setSessions((prev) => {
+      const newSessions = prev.filter((_, idx) => idx !== selectedSessionIdx);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("sessions", JSON.stringify(newSessions));
+      }
+      return newSessions;
+    });
+    setSelectedSessionIdx(null);
+  }
+
+  function deleteStat(statId: string) {
+    setSessions((prev) => {
+      if (selectedSessionIdx !== null) {
+        const newSessions = structuredClone(prev);
+        newSessions[selectedSessionIdx].stats = newSessions[
+          selectedSessionIdx
+        ].stats.filter((s) => s.id !== statId);
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem("sessions", JSON.stringify(newSessions));
+        }
+        return newSessions;
+      }
+      return prev;
+    });
+  }
+
   return (
     <div>
       <h2 className="text-xl font-bold">Sessions</h2>
       <div className="grid grid-cols-1 md:grid-cols-[200px_1fr]">
         {/* List */}
-        <ul className="divide-y-2 py-2">
+        <ul className="space-y-2 py-2 md:mr-2 md:border-r md:border-white/30 md:pr-4">
           <li>
             <button
               className="px-4 py-2 rounded-md bg-white/20 hover:bg-white/30 w-full text-center"
@@ -202,7 +232,7 @@ export default function Home() {
           {sessions.map((session, idx) => (
             <li key={session.id}>
               <button
-                className="px-4 py-2 rounded-md hover:bg-white/10 w-full"
+                className={`px-4 py-2 rounded-md hover:bg-white/10 w-full ${idx === selectedSessionIdx ? "border-1 border-white/30" : ""}`}
                 onClick={() => setSelectedSessionIdx(idx)}
               >
                 {session.title}
@@ -221,18 +251,24 @@ export default function Home() {
                   value={selectedSession.title}
                   onChange={(e) => changeSessionTitle(e.target.value)}
                 />
-                <div className="flex gap-4 md:justify-end justify-start w-full">
+                <div className="flex gap-4 md:justify-end justify-start w-full ">
                   <button
                     onClick={duplicateSession}
-                    className="hover:underline text-sm md:text-base"
+                    className="hover:underline text-sm"
                   >
                     Duplicate Session
                   </button>
                   <button
                     onClick={downloadCsv}
-                    className="hover:underline text-sm md:text-base"
+                    className="hover:underline text-sm"
                   >
                     Export as CSV
+                  </button>
+                  <button
+                    onClick={deleteSession}
+                    className="hover:underline text-sm text-red-500"
+                  >
+                    Delete Session
                   </button>
                 </div>
               </div>
@@ -240,7 +276,7 @@ export default function Home() {
                 {selectedSession.stats.map((stat) => (
                   <li
                     key={stat.id}
-                    className="sm:w-48 w-full h-32 border grid grid-cols-[30px_1fr_30px]"
+                    className="sm:w-48 w-full h-32 border grid grid-cols-[30px_1fr_30px] relative"
                   >
                     <button
                       type="button"
@@ -266,6 +302,12 @@ export default function Home() {
                           changeStatValue(stat.id, Number(e.target.value))
                         }
                       />
+                      <button
+                        onClick={() => deleteStat(stat.id)}
+                        className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 bg-red-500 rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                      >
+                        ×
+                      </button>
                     </div>
                     <button
                       type="button"
